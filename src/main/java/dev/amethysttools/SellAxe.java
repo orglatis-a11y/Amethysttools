@@ -1,6 +1,7 @@
 package dev.amethysttools;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,6 +20,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.Locale;
 
 /** Sell Axe (Vault) + Haste while holding an amethyst tool. */
 public class SellAxe implements Listener {
@@ -86,6 +89,26 @@ public class SellAxe implements Listener {
         return total;
     }
 
+    // ------------------------------------------------------------------ action bar
+
+    /** Action bar: green $ + white shortened money (1.5K, 2.3M, ...). */
+    private void sendSold(Player p, double total) {
+        p.sendActionBar(Component.text("$", NamedTextColor.GREEN)
+                .append(Component.text(shorten(total), NamedTextColor.WHITE)));
+    }
+
+    private String shorten(double value) {
+        String[] suffix = {"", "K", "M", "B", "T", "Q"};
+        int i = 0;
+        while (value >= 1000 && i < suffix.length - 1) {
+            value /= 1000;
+            i++;
+        }
+        String s = String.format(Locale.US, "%.2f", value);
+        if (s.contains(".")) s = s.replaceAll("0+$", "").replaceAll("\\.$", "");
+        return s + suffix[i];
+    }
+
     // ------------------------------------------------------------------ interact
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -128,9 +151,7 @@ public class SellAxe implements Listener {
                 return;
             }
             eco.deposit(p, total);
-            plugin.send(p, plugin.msg("sold")
-                    .replace("%items%", String.valueOf(count[0]))
-                    .replace("%money%", eco.format(total)));
+            sendSold(p, total);
         } else {
             e.setCancelled(true);
             SellHolder holder = new SellHolder();
@@ -163,9 +184,7 @@ public class SellAxe implements Listener {
             plugin.send(p, plugin.msg("no-economy"));
         } else if (total > 0) {
             eco.deposit(p, total);
-            plugin.send(p, plugin.msg("sold")
-                    .replace("%items%", String.valueOf(count[0]))
-                    .replace("%money%", eco.format(total)));
+            sendSold(p, total);
         } else {
             plugin.send(p, plugin.msg("nothing-to-sell"));
         }
