@@ -2,6 +2,7 @@ name: AmethystTools
 version: '${project.version}'
 main: dev.amethysttools.AmethystTools
 api-version: '1.21'
+softdepend: [Vault]
 description: DonutSMP-style amethyst tools with purple particles
 commands:
   amethyst:
