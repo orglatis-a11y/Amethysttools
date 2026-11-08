@@ -37,7 +37,7 @@ import java.util.*;
 
 public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
 
-    private static final List<String> TOOLS = List.of("pickaxe", "shovel", "axe", "hoe");
+    private static final List<String> TOOLS = List.of("pickaxe", "shovel", "axe", "hoe", "sellaxe");
 
     private static final Set<Material> CROPS = EnumSet.of(
             Material.WHEAT, Material.CARROTS, Material.POTATOES, Material.BEETROOTS, Material.NETHER_WART);
@@ -55,6 +55,9 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
         loadSettings();
         Bukkit.getPluginManager().registerEvents(this, this);
         Bukkit.getScheduler().runTaskTimer(this, this::checkExpiry, 600L, 600L);
+        SellAxe sellAxe = new SellAxe(this);
+        Bukkit.getPluginManager().registerEvents(sellAxe, this);
+        sellAxe.startHaste();
         var cmd = getCommand("amethyst");
         if (cmd != null) {
             cmd.setExecutor(this);
@@ -81,7 +84,7 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
             case "hoe" -> Material.NETHERITE_HOE;
             default -> Material.NETHERITE_AXE;
         };
-        String name = Character.toUpperCase(type.charAt(0)) + type.substring(1);
+        String name = type.equals("sellaxe") ? "Sell Axe" : Character.toUpperCase(type.charAt(0)) + type.substring(1);
 
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
@@ -95,6 +98,10 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
             case "pickaxe" -> lore.add(line("Mines a 3x3 area", 0xD9A6FF));
             case "shovel" -> lore.add(line("Digs a 3x3 area", 0xD9A6FF));
             case "hoe" -> lore.add(line("Harvests & replants 3x3 crops", 0xD9A6FF));
+            case "sellaxe" -> {
+                lore.add(line("Right-click a chest to sell everything", 0xD9A6FF));
+                lore.add(line("Right-click air to open the sell menu", 0xD9A6FF));
+            }
             default -> lore.add(line("Chops down entire trees", 0xD9A6FF));
         }
         if (getConfig().getBoolean("timer.enabled", true)) {
@@ -119,7 +126,7 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
         return Component.text(text, TextColor.color(rgb)).decoration(TextDecoration.ITALIC, false);
     }
 
-    private String getToolType(ItemStack item) {
+    String getToolType(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return null;
         return item.getItemMeta().getPersistentDataContainer().get(toolKey, PersistentDataType.STRING);
     }
@@ -153,6 +160,8 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
 
         GameMode gm = p.getGameMode();
         if (gm == GameMode.CREATIVE || gm == GameMode.SPECTATOR) return;
+
+        if (type.equals("sellaxe")) return; // behaves like a normal axe when breaking
 
         if (type.equals("hoe")) {
             handleHoe(p, origin, tool, e);
@@ -223,7 +232,7 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
 
     // ------------------------------------------------------------------ self-destruct timer
 
-    private boolean isExpired(ItemStack item) {
+    boolean isExpired(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return false;
         Long t = item.getItemMeta().getPersistentDataContainer().get(expireKey, PersistentDataType.LONG);
         return t != null && System.currentTimeMillis() > t;
@@ -338,12 +347,12 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
 
     // ------------------------------------------------------------------ commands
 
-    private String msg(String path) {
+    String msg(String path) {
         return LegacyComponentSerializer.legacyAmpersand().serialize(
                 LegacyComponentSerializer.legacyAmpersand().deserialize(getConfig().getString("messages." + path, "")));
     }
 
-    private void send(CommandSender s, String text) {
+    void send(CommandSender s, String text) {
         s.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(text));
     }
 
@@ -409,4 +418,4 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
         out.removeIf(s -> !s.toLowerCase().startsWith(last));
         return out;
     }
-                                                  }
+                 }
