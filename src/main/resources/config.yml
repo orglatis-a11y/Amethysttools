@@ -9,10 +9,10 @@ timer:
   enabled: true
   minutes: 4319
 
-# Haste effect while holding any amethyst tool
-haste:
-  enabled: true
+# Haste Potion: purple bottle, drink it to get Haste (seconds: 300 = 5 minutes)
+haste-potion:
   level: 2
+  seconds: 300
 
 axe:
   max-blocks: 256
