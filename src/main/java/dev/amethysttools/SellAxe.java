@@ -70,8 +70,20 @@ public class SellAxe implements Listener {
         return economy;
     }
 
-    private double priceOf(Material m) {
-        return plugin.getConfig().getDouble("sell-prices." + m.name(), 0);
+    /** Listed price wins; otherwise every item sells for default-price (if sell-all-items is true). */
+    private double priceOf(ItemStack it) {
+        Material m = it.getType();
+        if (m.isAir()) return 0;
+        if (plugin.getToolType(it) != null) return 0; // amethyst tools can't be sold
+
+        var cfg = plugin.getConfig();
+        String path = "sell-prices." + m.name();
+        if (cfg.contains(path)) return cfg.getDouble(path); // set to 0 to make an item unsellable
+
+        // shulker boxes may hold items, so they are only sold if you price them yourself
+        if (m.name().endsWith("SHULKER_BOX")) return 0;
+
+        return cfg.getBoolean("sell-all-items", true) ? cfg.getDouble("default-price", 1) : 0;
     }
 
     /** Removes sellable items from the inventory and returns the total value. */
@@ -80,7 +92,7 @@ public class SellAxe implements Listener {
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack it = inv.getItem(i);
             if (it == null) continue;
-            double price = priceOf(it.getType());
+            double price = priceOf(it);
             if (price <= 0) continue;
             total += price * it.getAmount();
             count[0] += it.getAmount();
