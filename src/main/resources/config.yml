@@ -1,0 +1,46 @@
+# Amethyst Tools config
+
+# Pickaxe/Shovel only break extra blocks that the tool is actually good at
+# (pickaxe -> stone/ores, shovel -> dirt/sand/gravel). Set false to break everything in the 3x3.
+only-preferred-tool: true
+
+# Tools disappear after this many minutes (4319 = 2d 23h 59m, like DonutSMP)
+timer:
+  enabled: true
+  minutes: 4319
+
+axe:
+  max-blocks: 256
+  break-leaves: true
+
+particles:
+  enabled: true
+  color: [160, 32, 240]   # RGB purple
+  amount: 12
+
+# Blocks the tools can NEVER break (bedrock + illegal/admin blocks).
+blacklist:
+  - BEDROCK
+  - BARRIER
+  - LIGHT
+  - STRUCTURE_BLOCK
+  - STRUCTURE_VOID
+  - JIGSAW
+  - COMMAND_BLOCK
+  - CHAIN_COMMAND_BLOCK
+  - REPEATING_COMMAND_BLOCK
+  - END_PORTAL
+  - END_PORTAL_FRAME
+  - END_GATEWAY
+  - NETHER_PORTAL
+  - REINFORCED_DEEPSLATE
+  - SPAWNER
+  - TRIAL_SPAWNER
+  - VAULT
+
+messages:
+  given: "&dYou received an &5Amethyst %tool%&d!"
+  no-permission: "&cNo permission."
+  expired: "&cYour Amethyst tool has self-destructed!"
+  usage: "&cUsage: /amethyst give <player> <pickaxe|shovel|axe|hoe> [amount]"
+  reloaded: "&dAmethystTools reloaded."
