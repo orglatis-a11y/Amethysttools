@@ -9,6 +9,11 @@ timer:
   enabled: true
   minutes: 4319
 
+# Haste effect while holding any amethyst tool
+haste:
+  enabled: true
+  level: 2
+
 axe:
   max-blocks: 256
   break-leaves: true
@@ -38,9 +43,74 @@ blacklist:
   - TRIAL_SPAWNER
   - VAULT
 
+# Sell Axe: with sell-all-items true, EVERY item can be sold.
+# Items listed in sell-prices use their own price, everything else sells for default-price.
+# Set an item's price to 0 in sell-prices to make it unsellable.
+sell-all-items: true
+default-price: 1
+
+# Sell Axe prices (per item). Needs Vault + an economy plugin (e.g. EssentialsX).
+sell-prices:
+sell-prices:
+  COBBLESTONE: 1
+  STONE: 1.5
+  DEEPSLATE: 1.5
+  COBBLED_DEEPSLATE: 1.5
+  DIRT: 0.5
+  SAND: 1
+  GRAVEL: 1
+  NETHERRACK: 0.5
+  OAK_LOG: 2
+  SPRUCE_LOG: 2
+  BIRCH_LOG: 2
+  JUNGLE_LOG: 2
+  ACACIA_LOG: 2
+  DARK_OAK_LOG: 2
+  COAL: 5
+  RAW_COPPER: 3
+  COPPER_INGOT: 4
+  RAW_IRON: 8
+  IRON_INGOT: 10
+  RAW_GOLD: 12
+  GOLD_INGOT: 15
+  REDSTONE: 3
+  LAPIS_LAZULI: 3
+  QUARTZ: 4
+  DIAMOND: 100
+  EMERALD: 80
+  ANCIENT_DEBRIS: 500
+  NETHERITE_INGOT: 1000
+  COAL_BLOCK: 45
+  COPPER_BLOCK: 36
+  IRON_BLOCK: 90
+  GOLD_BLOCK: 135
+  REDSTONE_BLOCK: 27
+  LAPIS_BLOCK: 27
+  DIAMOND_BLOCK: 900
+  EMERALD_BLOCK: 720
+  NETHERITE_BLOCK: 9000
+  WHEAT: 3
+  CARROT: 2
+  POTATO: 2
+  BEETROOT: 2
+  NETHER_WART: 4
+  SUGAR_CANE: 2
+  PUMPKIN: 4
+  MELON_SLICE: 1
+  BONE: 3
+  STRING: 3
+  GUNPOWDER: 5
+  ROTTEN_FLESH: 1
+  SPIDER_EYE: 3
+  ENDER_PEARL: 20
+  BLAZE_ROD: 15
+
 messages:
+  sold: "&dSold &5%items% &ditems for &5%money%&d!"
+  nothing-to-sell: "&cNothing sellable in there."
+  no-economy: "&cNo economy found. Install Vault + an economy plugin."
   given: "&dYou received an &5Amethyst %tool%&d!"
   no-permission: "&cNo permission."
   expired: "&cYour Amethyst tool has self-destructed!"
-  usage: "&cUsage: /amethyst give <player> <pickaxe|shovel|axe|hoe> [amount]"
+  usage: "&cUsage: /amethyst give <player> <pickaxe|shovel|axe|hoe|sellaxe> [amount]"
   reloaded: "&dAmethystTools reloaded."
