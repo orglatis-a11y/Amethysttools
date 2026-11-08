@@ -1,0 +1,17 @@
+name: AmethystTools
+version: '${project.version}'
+main: dev.amethysttools.AmethystTools
+api-version: '1.21'
+description: DonutSMP-style amethyst tools with purple particles
+commands:
+  amethyst:
+    description: Give amethyst tools / reload config
+    usage: /amethyst <give|reload>
+    aliases: [amethysttools]
+permissions:
+  amethysttools.give:
+    default: op
+  amethysttools.reload:
+    default: op
+  amethysttools.use:
+    default: true
