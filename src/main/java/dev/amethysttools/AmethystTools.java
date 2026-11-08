@@ -30,6 +30,9 @@ import org.bukkit.block.data.type.Leaves;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -37,7 +40,7 @@ import java.util.*;
 
 public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
 
-    private static final List<String> TOOLS = List.of("pickaxe", "shovel", "axe", "hoe", "sellaxe");
+    private static final List<String> TOOLS = List.of("pickaxe", "shovel", "axe", "hoe", "sellaxe", "hastepotion");
 
     private static final Set<Material> CROPS = EnumSet.of(
             Material.WHEAT, Material.CARROTS, Material.POTATOES, Material.BEETROOTS, Material.NETHER_WART);
@@ -57,7 +60,6 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
         Bukkit.getScheduler().runTaskTimer(this, this::checkExpiry, 600L, 600L);
         SellAxe sellAxe = new SellAxe(this);
         Bukkit.getPluginManager().registerEvents(sellAxe, this);
-        sellAxe.startHaste();
         var cmd = getCommand("amethyst");
         if (cmd != null) {
             cmd.setExecutor(this);
@@ -77,7 +79,24 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
 
     // ------------------------------------------------------------------ items
 
+    private ItemStack createHastePotion() {
+        int level = Math.max(1, getConfig().getInt("haste-potion.level", 2));
+        int seconds = Math.max(1, getConfig().getInt("haste-potion.seconds", 300));
+
+        ItemStack item = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        meta.displayName(Component.text("Haste Potion", TextColor.color(0xB026FF))
+                .decoration(TextDecoration.ITALIC, false).decoration(TextDecoration.BOLD, true));
+        meta.setColor(Color.fromRGB(160, 32, 240)); // purple bottle
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.HASTE, seconds * 20, level - 1), true);
+        meta.lore(List.of(line("Drink to get Haste for " + formatDuration(Math.max(1, seconds / 60)), 0xD9A6FF)));
+        item.setItemMeta(meta);
+        return item;
+    }
+
     private ItemStack createTool(String type) {
+        if (type.equals("hastepotion")) return createHastePotion();
+
         Material mat = switch (type) {
             case "pickaxe" -> Material.NETHERITE_PICKAXE;
             case "shovel" -> Material.NETHERITE_SHOVEL;
@@ -397,7 +416,8 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
                 target.getInventory().addItem(createTool(type)).values()
                         .forEach(left -> target.getWorld().dropItemNaturally(target.getLocation(), left));
             }
-            send(target, msg("given").replace("%tool%", type));
+            String itemName = type.equals("sellaxe") ? "Sell Axe" : type.equals("hastepotion") ? "Haste Potion" : type;
+            send(target, msg("given").replace("%tool%", itemName));
             return true;
         }
         send(sender, msg("usage"));
@@ -418,4 +438,4 @@ public class AmethystTools extends JavaPlugin implements Listener, TabExecutor {
         out.removeIf(s -> !s.toLowerCase().startsWith(last));
         return out;
     }
-                 }
+                }
